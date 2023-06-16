@@ -1,6 +1,7 @@
 package br.com.elfs.loja.modelo;
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,14 +15,18 @@ public class Camisa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "nome")
     private String nome;
+    @Column(name = "tamanho")
     private String tamanho;
+    @Column(name = "preco")
     private BigDecimal preco;
+    @Column(name = "time")
     private String time;
     @ManyToOne
     private Tipo tipo;
 
-    public Camisa(String nome, String tamanho, BigDecimal preco, String time, Tipo tipo) {
+    public Camisa(String nome, String tamanho, BigDecimal preco, Tipo tipo, String time) {
         this.nome = nome;
         this.tamanho = tamanho;
         this.preco = preco;

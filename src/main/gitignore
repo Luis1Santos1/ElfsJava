@@ -1,0 +1,32 @@
+create database elfs;
+
+create table camisas (
+   id bigint not null auto_increment,
+    nome varchar(255),
+    preco decimal(19,2),
+    tamanho varchar(255),
+    time varchar(255),
+    tipo_id bigint,
+    primary key (id)
+) engine=InnoDB;
+
+create table tipos (
+   id bigint not null auto_increment,
+    nome varchar(255),
+    primary key (id)
+) engine=InnoDB;
+
+create table usuarios (
+   id bigint not null auto_increment,
+    nomeUsuario varchar(255),
+    senha varchar(255),
+    primary key (id)
+) engine=InnoDB;
+CREATE TABLE pagamentos (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  data DATETIME,
+  valor DOUBLE,
+  usuario_id BIGINT,
+  PRIMARY KEY (id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+);

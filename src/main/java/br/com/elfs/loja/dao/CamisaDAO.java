@@ -1,5 +1,7 @@
 package br.com.elfs.loja.dao;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import br.com.elfs.loja.modelo.Camisa;
@@ -22,7 +24,7 @@ public class CamisaDAO {
     }
 
     public List<Camisa> buscarTodos() {
-        String jpql = "SELECT c FROM Camisa c"
+        String jpql = "SELECT c FROM Camisa c";
         return em.createQuery(jpql, Camisa.class).getResultList();
     }
 
