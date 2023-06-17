@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import br.com.elfs.loja.dao.CamisaDAO;
 import br.com.elfs.loja.dao.PagamentoDAO;
@@ -23,7 +26,7 @@ public class App {
     private static Scanner scanner = new Scanner(System.in);
     private static boolean logadoOk = false;
 
-    //cria CRUD para usuario
+    // cria CRUD para usuario
 
     public void cadastrarUsuario() {
         System.out.print("Digite o nome de usuário: ");
@@ -31,6 +34,8 @@ public class App {
 
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
+
+        String senhaCriptografada = BCrypt.hashpw(senha, BCrypt.gensalt());
 
         EntityManager em = JPAUtil.getEntityManager();
         UsuarioDAO usuarioDAO = new UsuarioDAO(em);
@@ -44,7 +49,7 @@ public class App {
 
         em.getTransaction().begin();
 
-        Usuario novoUsuario = new Usuario(nomeUsuario, senha);
+        Usuario novoUsuario = new Usuario(nomeUsuario, senhaCriptografada);
         usuarioDAO.cadastrar(novoUsuario);
 
         em.getTransaction().commit();
@@ -64,7 +69,7 @@ public class App {
         UsuarioDAO usuarioDAO = new UsuarioDAO(em);
 
         Usuario usuario = usuarioDAO.buscarPorNomeUsuario(nomeUsuario);
-        if (usuario == null || !usuarioDAO.verificarCredenciais(nomeUsuario, senha)) {
+        if (usuario == null || !BCrypt.checkpw(senha, usuario.getSenha())) {
             System.out.println("Nome de usuário ou senha inválidos. Tente novamente.");
             return null;
         } else {
@@ -168,17 +173,29 @@ public class App {
         CamisaDAO camisaDAO = new CamisaDAO(em);
         TipoDAO tipoDAO = new TipoDAO(em);
 
-        em.getTransaction().begin();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
 
-        Tipo manga = new Tipo(tipoManga);
-        tipoDAO.cadastrar(manga);
+            Tipo manga = new Tipo(tipoManga);
+            tipoDAO.cadastrar(manga);
 
-        Camisa camisa = new Camisa(nome, tamanho, preco, manga, time);
-        camisaDAO.cadastrar(camisa);
+            Camisa camisa = new Camisa(nome, tamanho, preco, manga, time);
+            camisaDAO.cadastrar(camisa);
 
-        em.getTransaction().commit();
-        System.out.println("Camisa cadastrada com sucesso!");
-        em.close();
+            if (transaction.isActive()) {
+                transaction.commit();
+                System.out.println("Camisa cadastrada com sucesso!");
+            }
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+                System.out.println("Camisa cadastrada com sucesso!");
+            }
+            System.out.println("Erro ao cadastrar camisa: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
 
     public List<Camisa> buscarTodasCamisas() {
