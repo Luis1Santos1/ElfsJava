@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 
 import br.com.elfs.loja.modelo.Camisa;
 
-
 public class CamisaDAO {
 
     private EntityManager em;
@@ -15,9 +14,13 @@ public class CamisaDAO {
         this.em = em;
     }
 
-    public void cadastrar(Camisa camisa) {
-        this.em.persist(camisa);
+public void cadastrar(Camisa camisa) {
+    if (!em.getTransaction().isActive()) {
+        em.getTransaction().begin();
     }
+    em.persist(camisa);
+    em.getTransaction().commit();
+}
 
     public Camisa buscarPorId(Long id) {
         return em.find(Camisa.class, id);
@@ -38,4 +41,15 @@ public class CamisaDAO {
         return em.createQuery(jpql, Camisa.class).setParameter("nome", nome).getResultList();
     }
     
+    public void atualizar(Camisa camisa) {
+        em.getTransaction().begin();
+        em.merge(camisa);
+        em.getTransaction().commit();
+    }
+    
+    public void excluir(Camisa camisa) {
+        em.getTransaction().begin();
+        em.remove(camisa);
+        em.getTransaction().commit();
+    }
 }

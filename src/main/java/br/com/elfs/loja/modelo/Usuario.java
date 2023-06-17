@@ -1,5 +1,6 @@
 package br.com.elfs.loja.modelo;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,9 +13,11 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+    @Column(name = "usuario")
     private String nomeUsuario;
+    @Column(name = "senha")
     private String senha;
+    @Column(name = "statuslogado")
     private boolean logado;
 
 
@@ -26,7 +29,7 @@ public class Usuario {
 
     public Usuario() {
         
-}
+    }
 
     public Long getId() {
         return this.id;
