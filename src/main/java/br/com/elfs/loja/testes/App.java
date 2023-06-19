@@ -259,8 +259,11 @@ public class App {
         try {
             transaction.begin();
 
-            Tipo manga = new Tipo(tipoManga);
-            tipoDAO.cadastrar(manga);
+            Tipo manga = tipoDAO.buscarPorNome(tipoManga);
+            if (manga == null) {
+                manga = new Tipo(tipoManga);
+                tipoDAO.cadastrar(manga);
+            }
 
             Camisa camisa = new Camisa(nome, tamanho, preco, manga, time);
             camisaDAO.cadastrar(camisa);
@@ -385,14 +388,18 @@ public class App {
         System.out.print("Digite o novo tipo de manga da camisa (ou enter para manter o atual): ");
         String novoTipoManga = scanner.nextLine();
         if (!novoTipoManga.isEmpty()) {
-            TipoDAO tipoDAO = new TipoDAO(em);
-            Tipo manga = tipoDAO.buscarPorNome(novoTipoManga);
-            if (manga == null) {
-                manga = new Tipo(novoTipoManga);
-                tipoDAO.cadastrar(manga);
+            Tipo mangaExistente = camisa.getTipo();
+            if (mangaExistente == null || !mangaExistente.getNome().equals(novoTipoManga)) {
+                TipoDAO tipoDAO = new TipoDAO(em);
+                Tipo manga = tipoDAO.buscarPorNome(novoTipoManga);
+                if (manga == null) {
+                    manga = new Tipo(novoTipoManga);
+                    tipoDAO.cadastrar(manga);
+                }
+                camisa.setTipo(manga);
             }
-            camisa.setTipo(manga);
         }
+
 
         System.out.print("Digite o novo time da camisa (ou enter para manter o atual): ");
         String novoTime = scanner.nextLine();
