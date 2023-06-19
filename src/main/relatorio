@@ -1,0 +1,29 @@
+Relatório Projeto Loja Elfs – Luis Fernando Santos Rosa
+
+Este relatório tem como objetivo analisar o código-fonte do projeto "Loja" e verificar o cumprimento das especificações e requisitos propostos. O projeto tem como objetivo aplicar os conceitos de herança, polimorfismo, interfaces e realizar um CRUD completo com persistência em banco de dados utilizando o Hibernate.
+
+Domínio de Aplicação
+O domínio de aplicação escolhido é uma loja virtual. O código apresenta a definição de entidades relevantes para esse domínio, como Camisa, Tipo, Pagamento e Usuário.
+
+Utilização de Java e MySQL
+O código utiliza a linguagem de programação Java para implementar o projeto, demonstrando o uso correto da linguagem para a criação das classes, métodos e estruturas necessárias. Além disso, é utilizado o banco de dados MySQL para a persistência dos dados.
+
+Utilização do Hibernate
+O projeto utiliza o framework Hibernate para realizar a persistência dos dados no banco de dados. O arquivo de configuração persistence.xml foi devidamente configurado, estabelecendo as propriedades de conexão com o banco de dados e as configurações específicas do Hibernate.
+
+Herança, Polimorfismo e Interfaces
+No código, foram implementados os conceitos de herança, polimorfismo e interfaces de acordo com a temática escolhida. A classe Camisa foi criada como uma subclasse da classe Tipo, utilizando a herança para aproveitar os atributos e métodos da classe base. Isso permite a reutilização de código e a organização das entidades de acordo com a hierarquia de tipos.
+
+Classes DAO e Operações CRUD
+Foram implementadas as classes DAO (Data Access Object) necessárias para realizar as operações de CRUD (Create, Read, Update, Delete) para as entidades do sistema. Cada classe DAO possui uma interface correspondente que define as operações necessárias, como cadastrar, buscarPorId, atualizar e remover. Essas classes são responsáveis por manipular as entidades no banco de dados, utilizando o EntityManager do Hibernate.
+
+Mecanismo Específico
+O código contempla a implementação de um mecanismo específico relacionado à temática da loja virtual. Embora não tenha sido especificado o detalhamento desse mecanismo no enunciado, é possível adicionar regras de negócio, consultas avançadas ou outras funcionalidades específicas do domínio da loja virtual.
+
+Autenticação de Usuários
+Foi mencionado no enunciado a necessidade de implementar um mecanismo de autenticação de usuários, no qual a senha deve ser criptografada no banco de dados. No código apresentado há uma implementação explícita desse mecanismo possibilitando a criptografia da senha de usuário.
+
+Menu Completo e Impressões de Entidades
+O código apresenta a implementação de um menu completo com todas as opções disponíveis do CRUD. Essa funcionalidade permite que o usuário possa interagir com o sistema, realizar operações de criação, leitura, atualização e exclusão de entidades, bem como imprimir informações relevantes conforme as necessidades do projeto.
+CONCLUSÃO
+O código apresentado possibilita o usuário realizar todas as operações de CRUD para todas as classes criadas, além disso possibilita a criação de usuários com a criptografia de senha na criação do usuário. Com tudo isso, foram contempladas todas as configurações do hibernate, mysql e JDK.

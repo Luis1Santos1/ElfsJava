@@ -8,17 +8,17 @@ import javax.persistence.GenerationType;
 
 @Entity
 @Table(name = "tipos")
-public class Tipo {
+public class Tipo extends Camisa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
 
     public Tipo() {
-        
-	}
-    
+    }
+
     public Tipo(String nome) {
+        super(); 
         this.nome = nome;
     }
 
@@ -28,6 +28,11 @@ public class Tipo {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 
 }

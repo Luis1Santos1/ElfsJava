@@ -1,4 +1,5 @@
 package br.com.elfs.loja.modelo;
+
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -6,23 +7,31 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "camisas")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Camisa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "nome")
     private String nome;
+
     @Column(name = "tamanho")
     private String tamanho;
+
     @Column(name = "preco")
     private BigDecimal preco;
+
     @Column(name = "time")
     private String time;
+
     @ManyToOne
     private Tipo tipo;
 
@@ -34,16 +43,16 @@ public class Camisa {
         this.tipo = tipo;
     }
 
-    public Long getId() {
-        return this.id;
+    public Camisa(){
+        
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getNome() {
-        return this.nome;
+        return nome;
     }
 
     public void setNome(String nome) {
@@ -51,7 +60,7 @@ public class Camisa {
     }
 
     public String getTamanho() {
-        return this.tamanho;
+        return tamanho;
     }
 
     public void setTamanho(String tamanho) {
@@ -59,7 +68,7 @@ public class Camisa {
     }
 
     public BigDecimal getPreco() {
-        return this.preco;
+        return preco;
     }
 
     public void setPreco(BigDecimal preco) {
@@ -67,7 +76,7 @@ public class Camisa {
     }
 
     public String getTime() {
-        return this.time;
+        return time;
     }
 
     public void setTime(String time) {
@@ -75,39 +84,10 @@ public class Camisa {
     }
 
     public Tipo getTipo() {
-        return this.tipo;
+        return tipo;
     }
 
     public void setTipo(Tipo tipo) {
         this.tipo = tipo;
     }
-
-
-
-    public Camisa id(Long id) {
-        setId(id);
-        return this;
-    }
-
-    public Camisa nome(String nome) {
-        setNome(nome);
-        return this;
-    }
-
-    public Camisa tamanho(String tamanho) {
-        setTamanho(tamanho);
-        return this;
-    }
-
-    public Camisa preco(BigDecimal preco) {
-        setPreco(preco);
-        return this;
-    }
-
-    public Camisa time(String time) {
-        setTime(time);
-        return this;
-    }
-
-
 }

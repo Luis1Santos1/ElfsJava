@@ -1,35 +1,36 @@
-create database elfs;
+CREATE DATABASE elfs;
 
-use elfs;
+USE elfs;
 
-create table camisas (
-   id bigint not null auto_increment,
-    nome varchar(255),
-    preco decimal(19,2),
-    tamanho varchar(255),
-    time varchar(255),
-    tipo_id bigint,
-    primary key (id)
-)
+CREATE TABLE camisas (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   nome VARCHAR(255),
+   preco DECIMAL(19, 2),
+   tamanho VARCHAR(255),
+   time VARCHAR(255),
+   tipo_id BIGINT,
+   PRIMARY KEY (id)
+);
 
-create table pagamentos (
-   id bigint not null auto_increment,
-    data datetime,
-    valor double precision,
-    usuario_id bigint,
-    primary key (id)
-)
+CREATE TABLE pagamentos (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   data DATE,
+   valor DOUBLE PRECISION,
+   usuario_id BIGINT,
+   PRIMARY KEY (id),
+   FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
 
-create table tipos (
-   id bigint not null auto_increment,
-    nome varchar(255),
-    primary key (id)
-)
+CREATE TABLE tipos (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   nome VARCHAR(255),
+   PRIMARY KEY (id)
+);
 
-create table usuarios (
-   id bigint not null auto_increment,
-    statuslogado bit,
-    usuario varchar(255),
-    senha varchar(255),
-    primary key (id)
-)
+CREATE TABLE usuarios (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   statuslogado BIT,
+   usuario VARCHAR(255),
+   senha VARCHAR(255),
+   PRIMARY KEY (id)
+);

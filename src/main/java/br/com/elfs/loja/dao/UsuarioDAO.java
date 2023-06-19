@@ -31,6 +31,15 @@ public class UsuarioDAO {
         return query.getResultList();
     }
 
+    public Usuario buscarUsuarioLogado() {
+        TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u WHERE u.logado = true", Usuario.class);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     public Usuario buscarPorNomeUsuario(String nomeUsuario) {
         TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u WHERE u.nomeUsuario = :nomeUsuario",
                 Usuario.class);
@@ -67,7 +76,7 @@ public class UsuarioDAO {
         return false;
     }
 
-        public void atualizar(Usuario usuario) {
+    public void atualizar(Usuario usuario) {
         em.getTransaction().begin();
         em.merge(usuario);
         em.getTransaction().commit();

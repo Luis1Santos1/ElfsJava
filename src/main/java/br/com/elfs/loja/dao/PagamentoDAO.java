@@ -26,7 +26,7 @@ public class PagamentoDAO {
         TypedQuery<Pagamento> query = em.createQuery("SELECT p FROM Pagamento p", Pagamento.class);
         return query.getResultList();
     }
-    
+
     public void atualizar(Pagamento pagamento) {
         em.merge(pagamento);
     }

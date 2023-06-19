@@ -28,14 +28,23 @@ public class Pagamento {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public Pagamento(double valor, Date data, Usuario usuario) {
+    public Pagamento(double valor, Date data, Long idUsuario) {
         this.valor = valor;
         this.data = data;
-        this.usuario = usuario;
+        this.usuario = new Usuario();
+        this.usuario.setId(idUsuario);
+    }
+
+    public Pagamento() {
+
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public double getValor() {
@@ -61,4 +70,5 @@ public class Pagamento {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
 }
