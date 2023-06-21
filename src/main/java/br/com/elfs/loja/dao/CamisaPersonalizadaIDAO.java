@@ -4,22 +4,22 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
-import br.com.elfs.loja.modelo.Camisa;
+import br.com.elfs.loja.modelo.CamisaPersonalizada;
 
-public class CamisaDAO implements CamisaIDAO {
+public class CamisaPersonalizadaDAO implements CamisaIDAO {
 
     private EntityManager em;
 
-    public CamisaDAO(EntityManager em) {
+    public CamisaPersonalizadaDAO(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public void cadastrar(Camisa camisa) {
+    public void cadastrar(CamisaPersonalizada camisaPersonalizada) {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            em.persist(camisa);
+            em.persist(camisaPersonalizada);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -30,39 +30,39 @@ public class CamisaDAO implements CamisaIDAO {
     }
 
     @Override
-    public Camisa buscarPorId(Long id) {
-        return em.find(Camisa.class, id);
+    public CamisaPersonalizada buscarPorId(Long id) {
+        return em.find(CamisaPersonalizada.class, id);
     }
 
     @Override
-    public List<Camisa> buscarTodos() {
-        String jpql = "SELECT c FROM Camisa c";
-        TypedQuery<Camisa> query = em.createQuery(jpql, Camisa.class);
+    public List<CamisaPersonalizada> buscarTodos() {
+        String jpql = "SELECT c FROM CamisaPersonalizada c";
+        TypedQuery<CamisaPersonalizada> query = em.createQuery(jpql, CamisaPersonalizada.class);
         return query.getResultList();
     }
 
     @Override
-    public List<Camisa> buscarPorNome(String nome) {
-        String jpql = "SELECT c FROM Camisa c WHERE c.nome = :nome";
-        TypedQuery<Camisa> query = em.createQuery(jpql, Camisa.class);
+    public List<CamisaPersonalizada> buscarPorNome(String nome) {
+        String jpql = "SELECT c FROM CamisaPersonalizada c WHERE c.nome = :nome";
+        TypedQuery<CamisaPersonalizada> query = em.createQuery(jpql, CamisaPersonalizada.class);
         query.setParameter("nome", nome);
         return query.getResultList();
     }
 
     @Override
-    public List<Camisa> buscarPorTipo(String tipo) {
-        String jpql = "SELECT c FROM Camisa c WHERE c.tipo.nome = :tipo";
-        TypedQuery<Camisa> query = em.createQuery(jpql, Camisa.class);
+    public List<CamisaPersonalizada> buscarPorTipo(String tipo) {
+        String jpql = "SELECT c FROM CamisaPersonalizada c WHERE c.tipo.nome = :tipo";
+        TypedQuery<CamisaPersonalizada> query = em.createQuery(jpql, CamisaPersonalizada.class);
         query.setParameter("tipo", tipo);
         return query.getResultList();
     }
 
     @Override
-    public void atualizar(Camisa camisa) {
+    public void atualizar(CamisaPersonalizada camisaPersonalizada) {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            em.merge(camisa);
+            em.merge(camisaPersonalizada);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -73,11 +73,11 @@ public class CamisaDAO implements CamisaIDAO {
     }
 
     @Override
-    public void excluir(Camisa camisa) {
+    public void excluir(CamisaPersonalizada camisaPersonalizada) {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            em.remove(camisa);
+            em.remove(camisaPersonalizada);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {
