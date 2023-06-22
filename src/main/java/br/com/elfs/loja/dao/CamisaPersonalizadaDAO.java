@@ -4,9 +4,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
+
+import br.com.elfs.loja.interfaces.CamisaPersonalizadaIDAO;
 import br.com.elfs.loja.modelo.CamisaPersonalizada;
 
-public class CamisaPersonalizadaDAO implements CamisaIDAO {
+public class CamisaPersonalizadaDAO implements CamisaPersonalizadaIDAO {
 
     private EntityManager em;
 
@@ -16,17 +18,7 @@ public class CamisaPersonalizadaDAO implements CamisaIDAO {
 
     @Override
     public void cadastrar(CamisaPersonalizada camisaPersonalizada) {
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.persist(camisaPersonalizada);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw e;
-        }
+        em.persist(camisaPersonalizada);
     }
 
     @Override

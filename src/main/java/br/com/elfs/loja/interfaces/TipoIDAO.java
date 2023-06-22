@@ -1,4 +1,4 @@
-package br.com.elfs.loja.dao;
+package br.com.elfs.loja.interfaces;
 
 import java.util.List;
 

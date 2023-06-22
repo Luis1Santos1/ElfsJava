@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 
 @Entity
 @Table(name = "tipos")
-public class Tipo extends Camisa {
+public class Tipo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

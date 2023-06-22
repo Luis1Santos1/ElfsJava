@@ -1,9 +1,10 @@
-package br.com.elfs.loja.dao;
+package br.com.elfs.loja.interfaces;
 
 import java.util.List;
+
 import br.com.elfs.loja.modelo.Usuario;
 
-public interface UsuarioDAO {
+public interface UsuarioIDAO {
 
     void cadastrar(Usuario usuario);
 
@@ -20,4 +21,5 @@ public interface UsuarioDAO {
     void atualizar(Usuario usuario);
 
     void excluir(Usuario usuario);
+
 }

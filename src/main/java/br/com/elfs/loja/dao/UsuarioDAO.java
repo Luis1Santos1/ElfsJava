@@ -1,8 +1,10 @@
 package br.com.elfs.loja.dao;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import br.com.elfs.loja.interfaces.UsuarioIDAO;
 import br.com.elfs.loja.modelo.Usuario;
 import br.com.elfs.loja.util.JPAUtil;
 import br.com.elfs.loja.util.PasswordUtil;
@@ -62,13 +64,11 @@ public class UsuarioDAO implements UsuarioIDAO {
         try {
             Usuario usuario = buscarPorNomeUsuario(nomeUsuario);
             if (usuario != null) {
-                // Verifica se a senha é válida utilizando BCrypt
                 if (PasswordUtil.verificarSenha(senha, usuario.getSenha())) {
                     return true;
                 }
             }
         } catch (IllegalArgumentException e) {
-            // Redefine a senha do usuário se ocorrer uma exceção
             Usuario usuario = buscarPorNomeUsuario(nomeUsuario);
             usuario.setSenha(PasswordUtil.criptografarSenha(senha));
             em.getTransaction().begin();

@@ -1,0 +1,48 @@
+public void cadastrarCamisa() {
+    System.out.println("=== Cadastro de Camisa ===");
+
+    System.out.print("Digite o nome da camisa: ");
+    String nome = scanner.nextLine();
+
+    System.out.print("Digite o tamanho da camisa: ");
+    String tamanho = scanner.nextLine();
+
+    System.out.print("Digite o preço da camisa: ");
+    BigDecimal preco = new BigDecimal(scanner.nextLine());
+
+    System.out.print("Digite o tipo de manga da camisa: ");
+    String tipoManga = scanner.nextLine();
+
+    System.out.print("Digite o time da camisa: ");
+    String time = scanner.nextLine();
+
+    EntityManager em = JPAUtil.getEntityManager();
+    CamisaDAO camisaDAO = new CamisaDAO(em);
+    TipoDAO tipoDAO = new TipoDAO(em);
+
+    EntityTransaction transaction = em.getTransaction();
+    try {
+        transaction.begin();
+
+        Tipo manga = tipoDAO.buscarPorNome(tipoManga);
+        if (manga == null) {
+            manga = new Tipo(tipoManga);
+            tipoDAO.cadastrar(manga);
+        }
+
+        Camisa camisa = new Camisa(nome, tamanho, preco, manga, time);
+        camisaDAO.cadastrar(camisa);
+        System.out.println("Camisa cadastrada com sucesso!");
+
+        if (transaction.isActive()) {
+            transaction.commit();
+        }
+    } catch (Exception e) {
+        if (transaction.isActive()) {
+            transaction.rollback();
+        }
+        System.out.println("Erro ao cadastrar camisa: " + e.getMessage());
+    } finally {
+        em.close();
+    }
+}

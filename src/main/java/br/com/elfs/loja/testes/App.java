@@ -9,15 +9,17 @@ import java.util.Scanner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Id;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import br.com.elfs.loja.dao.CamisaDAO;
+import br.com.elfs.loja.dao.CamisaPersonalizadaDAO;
 import br.com.elfs.loja.dao.PagamentoDAO;
 import br.com.elfs.loja.dao.TipoDAO;
 import br.com.elfs.loja.dao.UsuarioDAO;
+import br.com.elfs.loja.interfaces.PagamentoIDAO;
 import br.com.elfs.loja.modelo.Camisa;
+import br.com.elfs.loja.modelo.CamisaPersonalizada;
 import br.com.elfs.loja.modelo.Pagamento;
 import br.com.elfs.loja.modelo.Tipo;
 import br.com.elfs.loja.modelo.Usuario;
@@ -296,7 +298,7 @@ public class App {
     }
 
     public void buscarCamisaPorNome() {
-    
+
         System.out.print("Digite o nome da camisa que deseja buscar: ");
         String nomeCamisa = scanner.nextLine();
 
@@ -323,31 +325,31 @@ public class App {
     }
 
     public void buscarCamisaPorTipo() {
-    System.out.print("Digite o tipo de camisa que deseja buscar: ");
-    String tipoCamisa = scanner.nextLine();
+        System.out.print("Digite o tipo de camisa que deseja buscar: ");
+        String tipoCamisa = scanner.nextLine();
 
-    EntityManager em = JPAUtil.getEntityManager();
-    CamisaDAO camisaDAO = new CamisaDAO(em);
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaDAO camisaDAO = new CamisaDAO(em);
 
-    List<Camisa> camisas = camisaDAO.buscarPorTipo(tipoCamisa);
+        List<Camisa> camisas = camisaDAO.buscarPorTipo(tipoCamisa);
 
-    if (camisas.isEmpty()) {
-        System.out.println("Nenhuma camisa encontrada com o tipo informado.");
-    } else {
-        System.out.println("Camisas encontradas:");
-        for (Camisa camisa : camisas) {
-            System.out.println("ID: " + camisa.getId());
-            System.out.println("Nome: " + camisa.getNome());
-            System.out.println("Tamanho: " + camisa.getTamanho());
-            System.out.println("Time: " + camisa.getTime());
-            System.out.println("Tipo de Manga: " + camisa.getTipo());
-            System.out.println("Preço: " + camisa.getPreco());
+        if (camisas.isEmpty()) {
+            System.out.println("Nenhuma camisa encontrada com o tipo informado.");
+        } else {
+            System.out.println("Camisas encontradas:");
+            for (Camisa camisa : camisas) {
+                System.out.println("ID: " + camisa.getId());
+                System.out.println("Nome: " + camisa.getNome());
+                System.out.println("Tamanho: " + camisa.getTamanho());
+                System.out.println("Time: " + camisa.getTime());
+                System.out.println("Tipo de Manga: " + camisa.getTipo());
+                System.out.println("Preço: " + camisa.getPreco());
+            }
         }
+
+        em.close();
     }
 
-    em.close();
-}
-    
     public Camisa atualizarCamisa() {
 
         buscarTodasCamisas();
@@ -400,7 +402,6 @@ public class App {
             }
         }
 
-
         System.out.print("Digite o novo time da camisa (ou enter para manter o atual): ");
         String novoTime = scanner.nextLine();
         if (!novoTime.isEmpty()) {
@@ -440,6 +441,215 @@ public class App {
         System.out.println("Camisa excluída com sucesso!");
     }
 
+    // CRUD da classe camisa personalizada
+
+    public void cadastrarCamisaPersonalizada() {
+        System.out.println("=== Cadastro de Camisa Personalizada ===");
+
+        System.out.print("Digite o nome da camisa: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Digite o tamanho da camisa: ");
+        String tamanho = scanner.nextLine();
+
+        System.out.print("Digite o preço da camisa: ");
+        BigDecimal preco = new BigDecimal(scanner.nextLine());
+
+        System.out.print("Digite o tipo de manga da camisa: ");
+        String tipoManga = scanner.nextLine();
+
+        System.out.print("Digite o time da camisa: ");
+        String time = scanner.nextLine();
+
+        System.out.print("Digite a mensagem personalizada: ");
+        String mensagemPersonalizada = scanner.nextLine();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+        TipoDAO tipoDAO = new TipoDAO(em);
+
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+
+            Tipo manga = tipoDAO.buscarPorNome(tipoManga);
+            if (manga == null) {
+                manga = new Tipo(tipoManga);
+                tipoDAO.cadastrar(manga);
+            }
+
+            CamisaPersonalizada camisaPersonalizada = new CamisaPersonalizada(nome, tamanho, preco, manga, time, mensagemPersonalizada);
+            camisaPersonalizadaDAO.cadastrar(camisaPersonalizada);
+            System.out.println("Camisa cadastrada com sucesso!");
+
+            transaction.commit();
+
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            System.out.println("Erro ao cadastrar camisa: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    public void buscarTodasCamisasPersonalizadas() {
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+
+        List<CamisaPersonalizada> camisasPersonalizadas = camisaPersonalizadaDAO.buscarTodos();
+        System.out.println("Camisas personalizadas cadastradas:");
+
+        for (CamisaPersonalizada camisaPersonalizada : camisasPersonalizadas) {
+            System.out.println(camisaPersonalizada.getId() + " - " + camisaPersonalizada.getNome());
+        }
+    }
+
+    public void buscarCamisaPersonalizadaPorNome() {
+        System.out.print("Digite o nome da camisa personalizada que deseja buscar: ");
+        String nomeCamisa = scanner.nextLine();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+
+        List<CamisaPersonalizada> camisasPersonalizadas = camisaPersonalizadaDAO.buscarPorNome(nomeCamisa);
+
+        if (camisasPersonalizadas.isEmpty()) {
+            System.out.println("Nenhuma camisa personalizada encontrada com o nome informado.");
+        } else {
+            System.out.println("Detalhes da camisa personalizada:");
+            for (CamisaPersonalizada camisaPersonalizada : camisasPersonalizadas) {
+                System.out.println("ID: " + camisaPersonalizada.getId());
+                System.out.println("Nome: " + camisaPersonalizada.getNome());
+                System.out.println("Tamanho: " + camisaPersonalizada.getTamanho());
+                System.out.println("Time: " + camisaPersonalizada.getTime());
+                System.out.println("Tipo de Manga: " + camisaPersonalizada.getTipo());
+                System.out.println("Preço: " + camisaPersonalizada.getPreco());
+                System.out.println("Mensagem Personalizada: " + camisaPersonalizada.getMensagemPersonalizada());
+            }
+        }
+    }
+
+    public void buscarCamisaPersonalizadaPorTipo() {
+        System.out.print("Digite o tipo de manga da camisa personalizada que deseja buscar: ");
+        String tipoManga = scanner.nextLine();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+
+        List<CamisaPersonalizada> camisasPersonalizadas = camisaPersonalizadaDAO.buscarPorTipo(tipoManga);
+
+        if (camisasPersonalizadas.isEmpty()) {
+            System.out.println("Nenhuma camisa personalizada encontrada com o tipo de manga informado.");
+        } else {
+            System.out.println("Camisas personalizadas encontradas:");
+            for (CamisaPersonalizada camisaPersonalizada : camisasPersonalizadas) {
+                System.out.println("ID: " + camisaPersonalizada.getId());
+                System.out.println("Nome: " + camisaPersonalizada.getNome());
+                System.out.println("Tamanho: " + camisaPersonalizada.getTamanho());
+                System.out.println("Time: " + camisaPersonalizada.getTime());
+                System.out.println("Tipo de Manga: " + camisaPersonalizada.getTipo());
+                System.out.println("Preço: " + camisaPersonalizada.getPreco());
+                System.out.println("Mensagem Personalizada: " + camisaPersonalizada.getMensagemPersonalizada());
+            }
+        }
+    }
+
+    public Camisa atualizarCamisaPersonalizada() {
+
+        buscarTodasCamisasPersonalizadas();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+
+        System.out.print("Digite o ID da camisa personalizada que deseja atualizar: ");
+        Long id = Long.parseLong(scanner.nextLine());
+
+        CamisaPersonalizada camisaPersonalizada = camisaPersonalizadaDAO.buscarPorId(id);
+        if (camisaPersonalizada == null) {
+            System.out.println("Camisa personalizada não encontrada.");
+            return null;
+        }
+
+        System.out.print("Digite o novo nome da camisa personalizada (ou enter para manter o atual): ");
+        String novoNome = scanner.nextLine();
+        if (!novoNome.isEmpty()) {
+            camisaPersonalizada.setNome(novoNome);
+        }
+
+        System.out.print("Digite o novo tamanho da camisa personalizada (ou enter para manter o atual): ");
+        String novoTamanho = scanner.nextLine();
+        if (!novoTamanho.isEmpty()) {
+            camisaPersonalizada.setTamanho(novoTamanho);
+        }
+
+        System.out.print("Digite o novo preço da camisa personalizada (ou enter para manter o atual): ");
+        String novoPrecoStr = scanner.nextLine();
+        if (!novoPrecoStr.isEmpty()) {
+            BigDecimal novoPreco = new BigDecimal(novoPrecoStr);
+            camisaPersonalizada.setPreco(novoPreco);
+        }
+
+        System.out.print("Digite o novo tipo de manga da camisa personalizada (ou enter para manter o atual): ");
+        String novoTipoManga = scanner.nextLine();
+        if (!novoTipoManga.isEmpty()) {
+            Tipo manga = em.find(Tipo.class, novoTipoManga);
+            if (manga == null) {
+                manga = new Tipo(novoTipoManga);
+                em.persist(manga);
+            }
+            camisaPersonalizada.setTipo(manga);
+        }
+
+        System.out.print("Digite o novo time da camisa personalizada (ou enter para manter o atual): ");
+        String novoTime = scanner.nextLine();
+        if (!novoTime.isEmpty()) {
+            camisaPersonalizada.setTime(novoTime);
+        }
+
+        System.out.print("Digite a nova mensagem personalizada (ou enter para manter a atual): ");
+        String novaMensagemPersonalizada = scanner.nextLine();
+        if (!novaMensagemPersonalizada.isEmpty()) {
+            camisaPersonalizada.setMensagemPersonalizada(novaMensagemPersonalizada);
+        }
+
+        camisaPersonalizadaDAO.atualizar(camisaPersonalizada);
+        em.close();
+
+        System.out.println("Camisa atualizada com sucesso!");
+
+        return camisaPersonalizada;
+    }
+
+    public void excluirCamisaPersonalizada() {
+
+        System.out.println("Camisas disponíveis para exclusão:");
+        buscarTodasCamisasPersonalizadas();
+
+        EntityManager em = JPAUtil.getEntityManager();
+        CamisaPersonalizadaDAO camisaPersonalizadaDAO = new CamisaPersonalizadaDAO(em);
+
+        System.out.print("Digite o ID da camisa personalizada que deseja excluir: ");
+        Long id = Long.parseLong(scanner.nextLine());
+
+        CamisaPersonalizada camisaPersonalizada = camisaPersonalizadaDAO.buscarPorId(id);
+        if (camisaPersonalizada == null) {
+            System.out.println("Camisa personalizada não encontrada.");
+            return;
+        }
+
+        camisaPersonalizadaDAO.excluir(camisaPersonalizada);
+        System.out.println("Camisa personalizada excluída com sucesso!");
+        em.close();
+
+    }
+
     // CRUD da classe pagamento
 
     public void CadastrarPagamento() {
@@ -460,7 +670,7 @@ public class App {
 
         EntityManager em = JPAUtil.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
-        PagamentoDAO pagamentoDAO = new PagamentoDAO(em);
+        PagamentoIDAO pagamentoDAO = new PagamentoDAO(em);
         UsuarioDAO usuarioDAO = new UsuarioDAO(em);
 
         Usuario usuarioLogado = usuarioDAO.buscarUsuarioLogado();
@@ -491,7 +701,7 @@ public class App {
 
     public void listarPagamentos() {
         EntityManager em = JPAUtil.getEntityManager();
-        PagamentoDAO pagamentoDAO = new PagamentoDAO(em);
+        PagamentoIDAO pagamentoDAO = new PagamentoDAO(em);
 
         List<Pagamento> pagamentos = pagamentoDAO.buscarTodos();
 
@@ -515,7 +725,7 @@ public class App {
         Long pagamentoId = Long.parseLong(scanner.nextLine());
 
         EntityManager em = JPAUtil.getEntityManager();
-        PagamentoDAO pagamentoDAO = new PagamentoDAO(em);
+        PagamentoIDAO pagamentoDAO = new PagamentoDAO(em);
 
         em.getTransaction().begin();
 
@@ -582,7 +792,7 @@ public class App {
         Long pagamentoId = Long.parseLong(scanner.nextLine());
 
         EntityManager em = JPAUtil.getEntityManager();
-        PagamentoDAO pagamentoDAO = new PagamentoDAO(em);
+        PagamentoIDAO pagamentoDAO = new PagamentoDAO(em);
 
         em.getTransaction().begin();
 
@@ -608,7 +818,6 @@ public class App {
             usuario.setLogado(false);
             usuarioDAO.atualizar(usuario);
         }
-
         em.close();
 
         System.out.println("Programa finalizado.");
@@ -621,7 +830,7 @@ public class App {
         while (rodarPrograma) {
             while (!logadoOk && rodarPrograma) {
                 System.out.println(
-                        "Escolha uma opção: -1. Cadastrar Usuario  \n-2. Logar Usuario \n-3.Listar Camisas Cadastradas \n-4.Buscar Camisas pelo Id \n-X. Para parar o programa \n");
+                        "Escolha uma opção: \n-1. Cadastrar Usuario  \n-2. Logar Usuario \n-3.Listar Camisas Cadastradas \n-4.Buscar Camisas por nome \n-X. Para parar o programa \n");
                 String escolha = scanner.nextLine();
 
                 if (escolha.equals("1")) {
@@ -634,14 +843,15 @@ public class App {
                     app.buscarCamisaPorNome();
                 }
 
-                else if (escolha.equals("X")) {
+                else if (escolha.equals("X") || escolha.equals("x")) {
+                    rodarPrograma = false;
                     app.finalizarPrograma();
                 }
             }
 
             while (logadoOk && rodarPrograma) {
                 System.out.println(
-                        "\n Escolha uma opção: \n-1. Cadastrar camisa \n-2. Atualizar camisa \n-3. Buscar Todas camisas \n-4. Buscar camisa por nome \n-5. Excluir camisa cadastrada \n-6. Cadastrar pagamento \n-7. Atualizar pagamento \n-8. Listar pagamentos \n-9. Deletar pagamento \n-10. Atualizar usuario \n-11. Excluir usuario \n-12. Deslogar usuario \n -X. Para parar o programa");
+                        "\n Escolha uma opção: \n-1. Cadastrar camisa \n-2. Atualizar camisa \n-3. Buscar Todas camisas \n-4. Buscar camisa por nome \n-5.Buscar camisa por tipo \n-6. Excluir camisa cadastrada \n-7. Cadastrar camisa personalizada \n-8. Atualizar camisa personalizada \n-9. Buscar Todas camisas personalizada \n-10. Buscar camisa personalizada por nome \n-11. Buscar camisa personalizada por tipo \n-12. Excluir camisa  personalizada cadastrada \n-13. Cadastrar pagamento \\n-14. Atualizar pagamento \n-15. Listar pagamentos \n-16. Deletar pagamento \n-17. Atualizar usuario \n-18. Excluir usuario \n-19. Deslogar usuario \n -X. Para parar o programa");
                 String escolha = scanner.nextLine();
 
                 if (escolha.equals("1")) {
@@ -652,27 +862,38 @@ public class App {
                     app.buscarTodasCamisas();
                 } else if (escolha.equals("4")) {
                     app.buscarCamisaPorNome();
-                }else if (escolha.equals("5")) {
+                } else if (escolha.equals("5")) {
                     app.buscarCamisaPorTipo();
                 } else if (escolha.equals("6")) {
                     app.excluirCamisa();
                 } else if (escolha.equals("7")) {
-                    app.CadastrarPagamento();
+                    app.cadastrarCamisaPersonalizada();
                 } else if (escolha.equals("8")) {
-                    app.atualizarPagamento();
+                    app.atualizarCamisaPersonalizada();
                 } else if (escolha.equals("9")) {
-                    app.listarPagamentos();
+                    app.buscarTodasCamisasPersonalizadas();
                 } else if (escolha.equals("10")) {
-                    app.deletarPagamento();
+                    app.buscarCamisaPersonalizadaPorNome();
                 } else if (escolha.equals("11")) {
-                    app.atualizarUsuario();
+                    app.buscarCamisaPersonalizadaPorTipo();
                 } else if (escolha.equals("12")) {
-                    app.excluirUsuario();
+                    app.excluirCamisaPersonalizada();
                 } else if (escolha.equals("13")) {
+                    app.CadastrarPagamento();
+                } else if (escolha.equals("14")) {
+                    app.atualizarPagamento();
+                } else if (escolha.equals("15")) {
+                    app.listarPagamentos();
+                } else if (escolha.equals("16")) {
+                    app.deletarPagamento();
+                } else if (escolha.equals("17")) {
+                    app.atualizarUsuario();
+                } else if (escolha.equals("18")) {
+                    app.excluirUsuario();
+                } else if (escolha.equals("19")) {
                     app.deslogarUsuario();
-                }
-
-                else if (escolha.equals("X")) {
+                } else if (escolha.equals("X")) {
+                    rodarPrograma = false;
                     app.finalizarPrograma();
                 }
             }
